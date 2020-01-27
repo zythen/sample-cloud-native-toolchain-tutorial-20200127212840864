@@ -16,28 +16,28 @@ var shell = require('gulp-shell');
 Gulp tasks for linting
 */
 
-gulp.task('default', function(callback) {
+gulp.series('default', function(callback) {
   runSequence('lint', 'dev-unit', callback);
 });
 
-gulp.task('lint-js', shell.task(
+gulp.series('lint-js', shell.series(
     ['node_modules/.bin/jshint app.js routes/ --reporter=node_modules/jshint-junit-reporter/reporter.js > test/jslint.xml'],
     { cwd: __dirname, ignoreErrors: false }
 ));
 
-gulp.task('lint-css', shell.task(
+gulp.series('lint-css', shell.series(
     ['node_modules/.bin/csslint public/**/*.css --ignore=box-model,ids --format=junit-xml > test/csslint.xml'],
     { cwd: __dirname, ignoreErrors: false }
 ));
 
-gulp.task('lint', ['lint-js','lint-css']);
+gulp.series('lint', ['lint-js','lint-css']);
 
 /*
 Gulp tasks for unit tests
 */
 
 //Task for karma (frontend) unit tests
-gulp.task('dev-karma', function(done) {
+gulp.series('dev-karma', function(done) {
   karma.start({
     configFile: __dirname + '/test/karma.conf.js',
     singleRun: true,
@@ -45,7 +45,7 @@ gulp.task('dev-karma', function(done) {
 });
 
 //Task for mocha (server) unit tests
-gulp.task('dev-mocha', function() {
+gulp.series('dev-mocha', function() {
   return gulp.src('test/unit/server/**/*spec.js', {read: false})
     .pipe(mocha({
       globals:['expect'],
@@ -62,8 +62,8 @@ gulp.task('dev-mocha', function() {
     }));
 });
 
-gulp.task('dev-setup', function() {
+gulp.series('dev-setup', function() {
   return bower();
 });
 
-gulp.task('dev-unit', ['dev-karma','dev-mocha']);
+gulp.series('dev-unit', ['dev-karma','dev-mocha']);
